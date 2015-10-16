@@ -8,7 +8,7 @@
     },
     "autoload": {
         "psr-4": {
-            "achertovsky\\paypal-yii2\\": ""
+            "achertovsky\\paypal\\": ""
         }
     }
 }
