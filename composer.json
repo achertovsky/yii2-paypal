@@ -1,0 +1,14 @@
+{
+    "name": "achertovsky/maplocation",
+    "description": "Saving and loading google response for defined location in model",
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": ">=2.0.4",
+        "paypal/merchant-sdk-php": "2.*",
+    },
+    "autoload": {
+        "psr-4": {
+            "achertovsky\\paypal-yii2\\": ""
+        }
+    }
+}
