@@ -2,7 +2,7 @@
 
 namespace achertovsky\paypal;
 
-use common\components\ModuleTrait;
+use achertovsky\components\ModuleTrait;
 use yii\helpers\Url;
 use Yii;
 use achertovsky\paypal\models\PaypalExpressPayment;
