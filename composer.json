@@ -1,6 +1,6 @@
 {
     "name": "achertovsky/paypal-yii2",
-    "description": "Saving and loading google response for defined location in model",
+    "description": "Makes paypal for yii2 much easier",
     "require": {
         "php": ">=5.4.0",
         "yiisoft/yii2": ">=2.0.4",
