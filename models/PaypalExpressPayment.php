@@ -112,7 +112,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
      * @return string URL
      * @throws Exception
      */
-    public function createExpressPayment($amount, $quantity)
+    public function createExpressPayment($amount, $quantity, $name = 'Goods')
     {
         /*
          * INITIAL CHECKS
@@ -154,7 +154,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
         $paymentDetails= new \PaymentDetailsType();
 
         $itemDetails = new \PaymentDetailsItemType();
-        $itemDetails->Name = 'Premium account';
+        $itemDetails->Name = $name;
         $itemDetails->Amount = $amount;
         $itemDetails->Quantity = $quantity;
 
