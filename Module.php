@@ -22,6 +22,7 @@ class Module extends \yii\base\Module
         $this->ipnUrl = Yii::$app->urlManager->createAbsoluteUrl($this->ipnUrl);
         $this->successUrl = Yii::$app->urlManager->createAbsoluteUrl($this->successUrl);
         $this->cancelUrl = Yii::$app->urlManager->createAbsoluteUrl($this->cancelUrl);
+				$this->controllerNamespace = 'achertovsky\paypal\controllers\\'.Yii::$app->id;
     }
     
     public function getPaypalExpressPayment()
