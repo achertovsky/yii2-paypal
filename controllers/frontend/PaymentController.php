@@ -1,6 +1,6 @@
 <?php
 
-namespace achertovsky\paypal-yii2\controllers\frontend;
+namespace achertovsky\paypal\controllers\frontend;
 
 use yii\filters\AccessControl;
 use Yii;

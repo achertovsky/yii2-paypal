@@ -1,11 +1,11 @@
 <?php
 
-namespace modules\payment;
+namespace achertovsky\paypal;
 
 use common\components\ModuleTrait;
 use yii\helpers\Url;
 use Yii;
-use modules\payment\models\PaypalExpressPayment;
+use achertovsky\paypal\models\PaypalExpressPayment;
 
 class Module extends \yii\base\Module
 {
