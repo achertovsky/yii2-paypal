@@ -17,7 +17,7 @@ The preferred way to install this extension is through composer.
 ```
 {
 	"require": {
-	    "achertovsky/paypal": "@dev"
+	    "achertovsky/paypal-yii2": "@dev"
     }
 }
 ```
@@ -25,13 +25,13 @@ The preferred way to install this extension is through composer.
 or
 
 ```
-	composer require achertovsky/paypal "@dev"
+	composer require achertovsky/paypal-yii2 "@dev"
 ```
 
 update your db schema
 
 ```
-php yii migrate/up --migrationPath=@vendor/achertovsky/paypal/migrations
+php yii migrate/up --migrationPath=@vendor/achertovsky/paypal-yii2/migrations
 ```
 Usage
 ======

@@ -1,9 +1,9 @@
 <?php
 
-namespace achertovsky\payment\controllers\backend;
+namespace achertovsky\paypal-yii2\controllers\backend;
 
 use yii\filters\AccessControl;
-use achertovsky\payment\models\PaypalSettings;
+use achertovsky\paypal-yii2\models\PaypalSettings;
 use Yii;
 use yii\bootstrap\ActiveForm;
 use yii\web\Response;

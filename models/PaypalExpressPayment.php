@@ -1,9 +1,9 @@
 <?php
 
-namespace achertovsky\payment\models;
+namespace achertovsky\paypal-yii2\models;
 
 use yii\base\Exception;
-use achertovsky\payment\models\PaypalSettings;
+use achertovsky\paypal-yii2\models\PaypalSettings;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
