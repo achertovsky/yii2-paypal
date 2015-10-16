@@ -1,6 +1,6 @@
 <?php
 
-namespace achertovsky\components;
+namespace achertovsky\paypal\components;
 
 use Yii;
 
