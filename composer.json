@@ -4,7 +4,7 @@
     "require": {
         "php": ">=5.4.0",
         "yiisoft/yii2": ">=2.0.4",
-        "paypal/merchant-sdk-php": "2.*",
+        "paypal/merchant-sdk-php": "2.*"
     },
     "autoload": {
         "psr-4": {
