@@ -1,6 +1,6 @@
 <?php
 
-namespace modules\payment\models;
+namespace achertovsky\payment\models;
 
 use Yii;
 use PayPalAPIInterfaceServiceService;

@@ -1,32 +1,24 @@
 <?php
 
-namespace modules\payment\controllers\backend;
+namespace achertovsky\payment\controllers\backend;
 
-use common\overrides\filter\AccessRule;
 use yii\filters\AccessControl;
-use modules\user\models\User;
-use modules\payment\models\PaypalSettings;
+use achertovsky\payment\models\PaypalSettings;
 use Yii;
 use yii\bootstrap\ActiveForm;
 use yii\web\Response;
 
 class PaymentController extends \yii\web\Controller
 {
+		//please, override it
     public function behaviors()
     {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'ruleConfig' => [
-                    'class' => AccessRule::className(),
-                ],
                 'rules' => [
                     [
-                        'allow' => true,
-                        'actions' => [
-                            'configure',
-                        ],
-                        'roles' => [User::ROLE_HEAD_ADMIN],
+                        'allow' => false,
                     ],
                 ],
             ],

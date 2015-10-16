@@ -1,10 +1,9 @@
 <?php
 
-namespace modules\payment\models;
+namespace achertovsky\payment\models;
 
 use yii\base\Exception;
-use modules\payment\models\PaypalSettings;
-use common\overrides\helpers\Logger;
+use achertovsky\payment\models\PaypalSettings;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
@@ -119,17 +118,17 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
          * INITIAL CHECKS
          */
         if (!is_int($quantity) || $quantity <= 0) {
-            Logger::logError('Quantity must be integer > 0');
+            Yii::error('Quantity must be integer > 0');
             throw new Exception('Quantity must be integer > 0');
         }
         
         if (!is_numeric($amount) || $amount <= 0) {
-            Logger::logError('Amount must be number > 0');
+            Yii::error('Amount must be number > 0');
             throw new Exception('Amount must be number > 0');
         }
         
         if (empty($this->successUrl) || empty($this->cancelUrl) || empty($this->currency)) {
-            Logger::logError('Success url or cancel url or currency haven\'t initialized');
+            Yii::error('Success url or cancel url or currency haven\'t initialized');
             throw new Exception('Success url or cancel url or currency haven\'t initialized');
         }
         
@@ -140,7 +139,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
         $settings = PaypalSettings::find()->one();
         
         if (empty($settings)) {
-            Logger::logError('Settings of PayPal haven\'t initialized');
+            Yii::error('Settings of PayPal haven\'t initialized');
             throw new Exception('Settings of PayPal haven\'t initialized');
         }
         
@@ -183,7 +182,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
         $setECResponse = $paypalService->SetExpressCheckout($setECReq);
         
         if (is_null($setECResponse->Errors)) {
-            Logger::logTrace('Payment created succesfully. Token is "'.$setECResponse->Token.'"');
+            Yii::info('Payment created succesfully. Token is "'.$setECResponse->Token.'"');
             $this->token = $setECResponse->Token;
             $this->setAttributes([
                 'payment_price' => $amount,
@@ -194,7 +193,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
             $this->save();
             return $this;
         } else {
-            Logger::logError('Errors: '.var_export($setECResponse->Errors, true));
+            Yii::error('Errors: '.var_export($setECResponse->Errors, true));
             throw new Exception('Errors: '.var_export($setECResponse->Errors, true));
         }
     }
@@ -202,7 +201,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
     public function doCheckout($payerId)
     {
         if (empty($this->ipnUrl)) {
-            Logger::logError('Ipn url haven\'t initialized');
+            Yii::error('Ipn url haven\'t initialized');
             throw new Exception('Ipn url haven\'t initialized');
         }
         $settings = PaypalSettings::find()->one();
@@ -241,7 +240,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
             $this->errors = var_export($DoECResponse->Errors, true);
             $this->status = self::STATUS_ERROR;
             $this->save();
-            Logger::logError('Errors: '.var_export($DoECResponse->Errors, true));
+            Yii::error('Errors: '.var_export($DoECResponse->Errors, true));
             return false;
         }
         $status = strtoupper($DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo[0]->PaymentStatus);

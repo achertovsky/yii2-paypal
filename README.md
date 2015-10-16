@@ -2,9 +2,10 @@
 
 Description
 ======
-Module for saving google responses for defined latitude and longitude. 
+Module for easy yii2 payments
 
-With correct configuring and without overriding you can find *Country*, *City* in model $location attribute. Also for another purposes module defines model $json attribute.
+Features:
+Now only express payment
 
 I hope it will be useful for you. 
 
@@ -16,7 +17,7 @@ The preferred way to install this extension is through composer.
 ```
 {
 	"require": {
-	    "achertovsky/maplocation": "@dev"
+	    "achertovsky/paypal": "@dev"
     }
 }
 ```
@@ -24,13 +25,13 @@ The preferred way to install this extension is through composer.
 or
 
 ```
-	composer require achertovsky/maplocation "@dev"
+	composer require achertovsky/paypal "@dev"
 ```
 
 update your db schema
 
 ```
-php yii migrate/up --migrationPath=@vendor/achertovsky/maplocation/migrations
+php yii migrate/up --migrationPath=@vendor/achertovsky/paypal/migrations
 ```
 Usage
 ======
@@ -40,60 +41,11 @@ you can use your attribute names.
 
 fox example: 
 ```
-'maplocation' => [
-	'class' => 'achertovsky\maplocation\Module',
-	'attribute' => 'location',
-	'latitudeAttribute' => 'latitude',
-	'longitudeAttribute' => 'longitude',
-	'jsonAttribute' => 'json',
+'payment' => [
+    'class' => 'modules\payment\Module',
+    //here is arrays like in Url::toRoute()
+    'ipnUrl' => ['/payment/payment/payment-notification'],
+    'successUrl' => ['/payment/payment/express-payment'],
+    'cancelUrl' => ['/', '#' => 'cancel'],
 ],
-```
-
-required model, which have location must have fields, that you assigned as attributes above
-
-fox example:
-```
-public $location;
-public $json;
-
-//in my case latitude and longitude - is table columns
-/** @inheritdoc */
-public function attributeLabels()
-{
-    return [
-        'latitude' => 'Latitude',
-        'longitude' => 'Longitude',
-    ];
-}
-```
-
-and finally for getting and setting location to and from module, you must trigger module events in required model
-
-for example:
-```
-/*
- * gets location for this instance
- */
-public function afterFind()
-{
-    if (!empty(Yii::$app->getModule('maplocation'))) {
-        Yii::$app->getModule('maplocation')->trigGetLocation($this);
-    }
-    
-    return true;
-}
-
-/*
- * sets location into module
- */
-public function beforeSave($insert)
-{
-    parent::beforeSave($insert);
-    
-    if (!empty(Yii::$app->getModule('maplocation'))) {
-        Yii::$app->getModule('maplocation')->trigAddLocation($this);
-    }
-    
-    return true;
-}
 ```

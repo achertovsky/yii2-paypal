@@ -1,6 +1,6 @@
 <?php
 
-namespace modules\payment\controllers\frontend;
+namespace achertovsky\payment\controllers\frontend;
 
 use yii\filters\AccessControl;
 use Yii;
