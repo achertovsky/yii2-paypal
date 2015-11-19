@@ -39,11 +39,14 @@ class PaymentController extends \yii\web\Controller
         return $this->render('index');
     }
     
-    public function actionPay()
+    public function actionPay($price)
     {
         $paypal = Yii::$app->getModule('payment')->paypalExpressPayment;
-        Yii::$app->settings->clearCache();
-        $paypal->createExpressPayment(Yii::$app->settings->get('premium_account'), 1);
+        try {
+            $paypal->createExpressPayment($price, 1);
+        } catch (Exception $ex) {
+            throw new \yii\web\NotFoundHttpException;
+        }
         $url = $paypal->paymentUrl;
         Yii::info('User #'.Yii::$app->user->getId().' redirected to paypal with payment #'.$paypal->id.' token is "'.$paypal->getToken().'"');
         return $this->redirect($url);

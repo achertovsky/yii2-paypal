@@ -42,7 +42,7 @@ you can use your attribute names.
 fox example: 
 ```
 'payment' => [
-    'class' => 'modules\payment\Module',
+    'class' => 'achertovsky\paypal\Module',
     //here is arrays like in Url::toRoute()
     'ipnUrl' => ['/payment/payment/payment-notification'],
     'successUrl' => ['/payment/payment/express-payment'],
