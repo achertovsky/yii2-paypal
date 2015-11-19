@@ -49,3 +49,13 @@ fox example:
     'cancelUrl' => ['/', '#' => 'cancel'],
 ],
 ```
+EXPRESS PAYMENT HOW TO:
+Just redirect user to 
+```
+use yii\helpers\Url;
+
+$numericValue = 15;
+//or
+$numericValue = 15.2;
+Url::toRoute(['/payment/payment/pay', 'price' => $numericValue]);
+```
