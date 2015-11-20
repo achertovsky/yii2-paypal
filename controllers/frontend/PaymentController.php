@@ -58,7 +58,7 @@ class PaymentController extends \yii\web\Controller
         if (empty($payment)) {
             throw new \yii\web\NotFoundHttpException;
         }
-        if ($payment->doCheckout($payerId)) {
+        if ($payment->doCheckout($PayerID)) {
             Yii::$app->getSession()->setFlash('success', 'Congratulations. You have successfully payed for a premium account. It will be enabled soon.');
         } else {
             Yii::$app->getSession()->setFlash('success', 'Sorry, but your payment was unsuccesfull');
