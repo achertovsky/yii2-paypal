@@ -52,10 +52,8 @@ class PaymentController extends \yii\web\Controller
         return $this->redirect($url);
     }
     
-    public function actionExpressPayment()
+    public function actionExpressPayment($token, $PayerID)
     {
-        $token = Yii::$app->request->get('token');
-        $payerId = Yii::$app->request->get('PayerID');
         $payment = Yii::$app->getModule('payment')->getPaypalExpressPaymentByToken($token);
         if (empty($payment)) {
             throw new \yii\web\NotFoundHttpException;

@@ -5,7 +5,6 @@ namespace achertovsky\paypal;
 use achertovsky\paypal\components\ModuleTrait;
 use yii\helpers\Url;
 use Yii;
-use achertovsky\paypal\models\PaypalExpressPayment;
 
 class Module extends \yii\base\Module
 {
@@ -15,6 +14,9 @@ class Module extends \yii\base\Module
     public $successUrl;
     public $cancelUrl;
     public $currency = 'USD';
+    public $modelMap = [
+        'PaypalExpressPayment' => 'achertovsky\paypal\models\PaypalExpressPayment',
+    ];
     
     public function __construct($id, $parent = null, $config = array())
     {
@@ -22,12 +24,11 @@ class Module extends \yii\base\Module
         $this->ipnUrl = Yii::$app->urlManager->createAbsoluteUrl($this->ipnUrl);
         $this->successUrl = Yii::$app->urlManager->createAbsoluteUrl($this->successUrl);
         $this->cancelUrl = Yii::$app->urlManager->createAbsoluteUrl($this->cancelUrl);
-				$this->controllerNamespace = 'achertovsky\paypal\controllers\\'.Yii::$app->id;
     }
     
     public function getPaypalExpressPayment()
     {
-        $paypal = new PaypalExpressPayment();
+        $paypal = new $this->modelMap['PaypalExpressPayment'];
         $paypal->successUrl = $this->successUrl;
         $paypal->cancelUrl = $this->cancelUrl;
         $paypal->ipnUrl = $this->ipnUrl;
@@ -38,7 +39,10 @@ class Module extends \yii\base\Module
     
     public function getPaypalExpressPaymentByToken($token)
     {
-        $paypal = PaypalExpressPayment::findByToken($token);
+        $paypal = call_user_func([
+            $this->modelMap['PaypalExpressPayment'],
+            'findByToken'
+        ], $token);
         $paypal->successUrl = $this->successUrl;
         $paypal->cancelUrl = $this->cancelUrl;
         $paypal->ipnUrl = $this->ipnUrl;
