@@ -45,7 +45,7 @@ fox example:
     'class' => 'achertovsky\paypal\Module',
     //here is arrays like in Url::toRoute()
     'ipnUrl' => ['/payment/payment/payment-notification'],
-    'successUrl' => ['/payment/payment/express-payment'],
+    'expressSuccessUrl' => ['/payment/payment/express-payment'],
     'cancelUrl' => ['/', '#' => 'cancel'],
 ],
 ```

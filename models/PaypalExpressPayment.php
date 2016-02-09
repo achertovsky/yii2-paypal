@@ -102,7 +102,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
             
     }
     
-    public $successUrl;
+    public $expressSuccessUrl;
     public $cancelUrl;
     public $ipnUrl;
     protected $token;

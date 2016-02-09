@@ -11,7 +11,7 @@ class Module extends \yii\base\Module
     use ModuleTrait;
     
     public $ipnUrl;
-    public $successUrl;
+    public $expressSuccessUrl;
     public $cancelUrl;
     public $currency = 'USD';
     public $modelMap = [
@@ -43,7 +43,7 @@ class Module extends \yii\base\Module
             $this->modelMap['PaypalExpressPayment'],
             'findByToken'
         ], $token);
-        $paypal->successUrl = $this->successUrl;
+        $paypal->expressSuccessUrl = $this->expressSuccessUrl;
         $paypal->cancelUrl = $this->cancelUrl;
         $paypal->ipnUrl = $this->ipnUrl;
         $paypal->currency = $this->currency;
