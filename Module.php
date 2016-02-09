@@ -12,6 +12,7 @@ class Module extends \yii\base\Module
     
     public $ipnUrl;
     public $expressSuccessUrl;
+    public $subscriptionSuccessUrl;
     public $cancelUrl;
     public $currency = 'USD';
     public $modelMap = [
@@ -22,14 +23,15 @@ class Module extends \yii\base\Module
     {
         parent::__construct($id, $parent, $config);
         $this->ipnUrl = Yii::$app->urlManager->createAbsoluteUrl($this->ipnUrl);
-        $this->successUrl = Yii::$app->urlManager->createAbsoluteUrl($this->successUrl);
+        $this->expressSuccessUrl = Yii::$app->urlManager->createAbsoluteUrl($this->expressSuccessUrl);
+        $this->subscriptionSuccessUrl = Yii::$app->urlManager->createAbsoluteUrl($this->subscriptionSuccessUrl);
         $this->cancelUrl = Yii::$app->urlManager->createAbsoluteUrl($this->cancelUrl);
     }
     
     public function getPaypalExpressPayment()
     {
         $paypal = new $this->modelMap['PaypalExpressPayment'];
-        $paypal->successUrl = $this->successUrl;
+        $paypal->expressSuccessUrl = $this->expressSuccessUrl;
         $paypal->cancelUrl = $this->cancelUrl;
         $paypal->ipnUrl = $this->ipnUrl;
         $paypal->currency = $this->currency;

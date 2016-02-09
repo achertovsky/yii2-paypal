@@ -127,7 +127,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
             throw new Exception('Amount must be number > 0');
         }
         
-        if (empty($this->successUrl) || empty($this->cancelUrl) || empty($this->currency)) {
+        if (empty($this->expressSuccessUrl) || empty($this->cancelUrl) || empty($this->currency)) {
             Yii::error('Success url or cancel url or currency haven\'t initialized');
             throw new Exception('Success url or cancel url or currency haven\'t initialized');
         }
@@ -169,7 +169,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
         $setECReqDetails = new \SetExpressCheckoutRequestDetailsType();
         $setECReqDetails->PaymentDetails[0] = $paymentDetails;
         $setECReqDetails->CancelURL = $this->cancelUrl;
-        $setECReqDetails->ReturnURL = $this->successUrl;
+        $setECReqDetails->ReturnURL = $this->expressSuccessUrl;
         $setECReqDetails->OrderTotal = $orderTotal;
 
         $setECReqType = new \SetExpressCheckoutRequestType();
