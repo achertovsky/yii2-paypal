@@ -9,11 +9,12 @@ use Yii;
 class Module extends \yii\base\Module
 {
     use ModuleTrait;
-    
-    public $ipnUrl;
-    public $expressSuccessUrl;
-    public $subscriptionSuccessUrl;
-    public $cancelUrl;
+
+    //here is arrays like in Url::toRoute()
+    public $ipnUrl = ['/payment/payment/payment-notification'];
+    public $expressSuccessUrl = ['/payment/payment/express-payment'];
+    public $subscriptionSuccessUrl = ['/payment/payment/express-payment'];
+    public $cancelUrl = ['/', '#' => 'cancel'];
     public $currency = 'USD';
     public $modelMap = [
         'PaypalExpressPayment' => 'achertovsky\paypal\models\PaypalExpressPayment',
