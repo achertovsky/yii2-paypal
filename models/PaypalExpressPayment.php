@@ -105,6 +105,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
     public $expressSuccessUrl;
     public $cancelUrl;
     public $ipnUrl;
+    public $ECVersion;
     protected $token;
     
     /**
@@ -173,7 +174,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
         $setECReqDetails->OrderTotal = $orderTotal;
 
         $setECReqType = new \SetExpressCheckoutRequestType();
-        $setECReqType->Version = '104.0';
+        $setECReqType->Version = $this->ECVersion;
         $setECReqType->SetExpressCheckoutRequestDetails = $setECReqDetails;
 
         $setECReq = new \SetExpressCheckoutReq();
@@ -230,7 +231,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
 
         $DoECRequest = new \DoExpressCheckoutPaymentRequestType();
         $DoECRequest->DoExpressCheckoutPaymentRequestDetails = $DoECRequestDetails;
-        $DoECRequest->Version = '104.0';
+        $DoECRequest->Version = $this->ECVersion;
 
         $DoECReq = new \DoExpressCheckoutPaymentReq();
         $DoECReq->DoExpressCheckoutPaymentRequest = $DoECRequest;

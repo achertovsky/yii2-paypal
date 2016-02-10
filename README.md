@@ -37,7 +37,7 @@ Usage
 ======
 to start using it - please, add it to your modules section
 
-also u can redefine attribute names.
+you can use your attribute names.
 
 fox example: 
 ```
