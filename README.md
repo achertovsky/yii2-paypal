@@ -44,9 +44,6 @@ fox example:
 'payment' => [
     'class' => 'achertovsky\paypal\Module',
     //here is arrays like in Url::toRoute()
-    'ipnUrl' => ['/payment/payment/payment-notification'],
-    'expressSuccessUrl' => ['/payment/payment/express-payment'],
-    'cancelUrl' => ['/', '#' => 'cancel'],
 ],
 ```
 EXPRESS PAYMENT HOW TO:  
@@ -77,4 +74,21 @@ $payment->setAttributes([
 ]);
 $payment->save();
 return $this->redirect(Url::toRoute(['/payment/payment/pay', 'price' => $numericValue, 'modelId' => $payment->id]));
+```
+
+for more detailed configuration you can override this module variables
+======
+```
+    public $ipnUrl = ['/payment/payment/payment-notification'];
+    public $expressSuccessUrl = ['/payment/payment/express-payment'];
+    public $subscriptionExpressSuccessUrl = ['/payment/payment/subscription-express-confirm'];
+    public $cancelUrl = ['/', '#' => 'cancel'];
+    public $currency = 'USD';
+    public $modelMap = [
+        'PaypalExpressPayment' => 'achertovsky\paypal\models\PaypalExpressPayment',
+        'PaypalSubscriptionExpress' => 'achertovsky\paypal\models\PaypalSubscriptionExpress',
+    ];
+    public $ECVersion = '104.0';
+    public $enableExpressPayment = true;
+    public $enableSubscriptionExpress = true;
 ```
