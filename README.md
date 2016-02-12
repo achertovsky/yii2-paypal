@@ -1,4 +1,4 @@
-# maplocation
+# Paypal-yii2
 
 Description
 ======
@@ -76,7 +76,7 @@ $payment->save();
 return $this->redirect(Url::toRoute(['/payment/payment/pay', 'price' => $numericValue, 'modelId' => $payment->id]));
 ```
 
-for more detailed configuration you can override this module variables
+For more detailed configuration you can override this module variables
 ======
 ```
     public $ipnUrl = ['/payment/payment/payment-notification'];
