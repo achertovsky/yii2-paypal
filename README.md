@@ -4,7 +4,7 @@ Description
 ======
 Module for easy yii2 payments
 
-Features:
+Features:  
 Now only express payment
 
 I hope it will be useful for you. 
@@ -49,13 +49,32 @@ fox example:
     'cancelUrl' => ['/', '#' => 'cancel'],
 ],
 ```
-EXPRESS PAYMENT HOW TO:
-Just redirect user to 
+EXPRESS PAYMENT HOW TO:  
+METHOD 1:  
+Just redirect user to
 ```
 use yii\helpers\Url;
 
 $numericValue = 15;
 //or
 $numericValue = 15.2;
-Url::toRoute(['/payment/payment/pay', 'price' => $numericValue]);
+return $this->redirect(Url::toRoute(['/payment/payment/pay', 'price' => $numericValue]));
 ```
+METHOD 2:
+
+use yii\helpers\Url;
+use achertovsky\paypal\models\PaypalExpressPayment;
+
+$numericValue = 15;
+//or
+$numericValue = 15.2;
+
+$payment = new PaypalExpressPayment();
+$payment->setScenario('prepare');
+$payment->setAttributes([
+	'user_id' => 1,
+	'payment_price' => $numericValue,
+	'currency' => 'USD',
+]);
+$payment->save();
+return $this->redirect(Url::toRoute(['/payment/payment/pay', 'price' => $numericValue, 'modelId' => $payment->id]));

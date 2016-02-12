@@ -27,8 +27,11 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
      * creates subscription url
      * @return string
      */
-    public function prepareSubscriptionUrl($description = 'This is subscription flow. Be careful before accept it')
+    public function prepareSubscriptionUrl($description = null)
     {
+        if (is_null($description)) {
+            $description = 'This is subscription flow. Be careful before accept it';
+        }
         $settings = PaypalSettings::find()->one();
         $config = [
             'mode' => $settings->mode ? 'live' : 'sandbox',

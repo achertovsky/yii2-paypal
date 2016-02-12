@@ -44,6 +44,9 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
     {
         return ArrayHelper::merge(parent::scenarios(), [
             'search' => [],
+            'prepare' => [
+                'currency', 'payment_price', 'user_id',
+            ],
         ]);
     }
     
