@@ -1,4 +1,4 @@
-# Paypal-yii2
+# maplocation
 
 Description
 ======
@@ -44,10 +44,14 @@ fox example:
 'payment' => [
     'class' => 'achertovsky\paypal\Module',
     //here is arrays like in Url::toRoute()
+    'ipnUrl' => ['/payment/payment/payment-notification'],
+    'expressSuccessUrl' => ['/payment/payment/express-payment'],
+    'cancelUrl' => ['/', '#' => 'cancel'],
 ],
 ```
 EXPRESS PAYMENT HOW TO:  
 METHOD 1:  
+Just redirect user to
 ```
 use yii\helpers\Url;
 
@@ -56,7 +60,7 @@ $numericValue = 15;
 $numericValue = 15.2;
 return $this->redirect(Url::toRoute(['/payment/payment/pay', 'price' => $numericValue]));
 ```
-METHOD 2 (more secured):
+METHOD 2:
 ```
 use yii\helpers\Url;
 use achertovsky\paypal\models\PaypalExpressPayment;
@@ -74,21 +78,4 @@ $payment->setAttributes([
 ]);
 $payment->save();
 return $this->redirect(Url::toRoute(['/payment/payment/pay', 'price' => $numericValue, 'modelId' => $payment->id]));
-```
-
-For more detailed configuration you can override this module variables
-======
-```
-    public $ipnUrl = ['/payment/payment/payment-notification'];
-    public $expressSuccessUrl = ['/payment/payment/express-payment'];
-    public $subscriptionExpressSuccessUrl = ['/payment/payment/subscription-express-confirm'];
-    public $cancelUrl = ['/', '#' => 'cancel'];
-    public $currency = 'USD';
-    public $modelMap = [
-        'PaypalExpressPayment' => 'achertovsky\paypal\models\PaypalExpressPayment',
-        'PaypalSubscriptionExpress' => 'achertovsky\paypal\models\PaypalSubscriptionExpress',
-    ];
-    public $ECVersion = '104.0';
-    public $enableExpressPayment = true;
-    public $enableSubscriptionExpress = true;
 ```
