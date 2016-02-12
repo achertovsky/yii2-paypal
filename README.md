@@ -1,4 +1,4 @@
-# maplocation
+# Paypal-yii2
 
 Description
 ======
@@ -78,4 +78,20 @@ $payment->setAttributes([
 ]);
 $payment->save();
 return $this->redirect(Url::toRoute(['/payment/payment/pay', 'price' => $numericValue, 'modelId' => $payment->id]));
+```
+Configuration variables listing
+======
+```
+public $ipnUrl = ['/payment/payment/payment-notification'];
+public $expressSuccessUrl = ['/payment/payment/express-payment'];
+public $subscriptionExpressSuccessUrl = ['/payment/payment/subscription-express-confirm'];
+public $cancelUrl = ['/', '#' => 'cancel'];
+public $currency = 'USD';
+public $modelMap = [
+    'PaypalExpressPayment' => 'achertovsky\paypal\models\PaypalExpressPayment',
+    'PaypalSubscriptionExpress' => 'achertovsky\paypal\models\PaypalSubscriptionExpress',
+];
+public $ECVersion = '104.0';
+public $enableExpressPayment = true;
+public $enableSubscriptionExpress = true;
 ```
