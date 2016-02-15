@@ -51,7 +51,7 @@ class PaymentController extends \yii\web\Controller
     public function actionPay($price, $modelId = null)
     {
         if (!Yii::$app->getModule('payment')->enableExpressPayment) {
-            throw new \yii\web\NotFoundHttpException;
+            throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
         if (!is_null($modelId)) {
             $model = PaypalExpressPayment::findOne($modelId);
@@ -80,11 +80,11 @@ class PaymentController extends \yii\web\Controller
     public function actionExpressPayment($token = null, $PayerID = null)
     {
         if (is_null($token) || is_null($PayerID) || !Yii::$app->getModule('payment')->enableExpressPayment) {
-            throw new \yii\web\NotFoundHttpException;
+            throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
         $payment = Yii::$app->getModule('payment')->getPaypalExpressPaymentByToken($token);
         if (empty($payment)) {
-            throw new \yii\web\NotFoundHttpException;
+            throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
         if ($payment->doCheckout($PayerID)) {
             Yii::$app->getSession()->setFlash('success', 'Congratulations. You have successfully payed.');
@@ -98,7 +98,7 @@ class PaymentController extends \yii\web\Controller
     public function actionSubscriptionExpressConfirm($token = null)
     {
         if (!Yii::$app->getModule('payment')->enableSubscriptionExpress || is_null($token)) {
-            throw new \yii\web\NotFoundHttpException;
+            throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
         //TODO continue flow
     }
@@ -106,7 +106,7 @@ class PaymentController extends \yii\web\Controller
     public function actionSubscriptionExpressCreate($price, $modelId = null, $period = 30, $description = 'This is subscription flow. Be careful before accept it')
     {
         if (!Yii::$app->getModule('payment')->enableSubscriptionExpress) {
-            throw new \yii\web\NotFoundHttpException;
+            throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
         if (!is_null($modelId)) {
             $paypal = PaypalExpressPayment::findOne($modelId);
@@ -121,7 +121,7 @@ class PaymentController extends \yii\web\Controller
                 return $this->redirect($url);
             }
         } catch (Exception $ex) {
-            throw new \yii\web\NotFoundHttpException;
+            throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
     }
 }
