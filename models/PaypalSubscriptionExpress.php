@@ -10,18 +10,64 @@ use SetExpressCheckoutRequestDetailsType;
 use BillingAgreementDetailsType;
 use SetExpressCheckoutRequestType;
 use SetExpressCheckoutReq;
+use yii\helpers\ArrayHelper;
+use yii\behaviors\TimestampBehavior;
 
+
+/**
+ * 
+ * @param int $user_id
+ * @param double $price
+ * @param string $token
+ * @param string $currency
+ * @param int $period
+ * @param int $created_at
+ * @param int $updated_at
+ * @param string $status
+ * @param text $errors
+ */
 class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
 {
     const EXPRESS_CHECKOUT_SANDBOX = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=';
     const EXPRESS_CHECKOUT_LIVE = 'https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=';
 
+    const STATUS_INITIALIZED = 'INITIALIZED';
+    const STATUS_CREATED_BY_SITE = 'CREATED_BY_SITE';
+    const STATUS_ERROR = 'ERROR';
+
     public $subscriptionUrl;
     public $cancelUrl;
-    public $currency;
     public $successUrl;
     public $ECVersion;
-    protected $token;
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+            ],
+        ];
+    }
+
+    public function rules()
+    {
+        return [
+            [['user_id', 'created_at', 'updated_at', 'period'], 'integer', 'min' => 0],
+            [['price', 'currency', 'period', 'token'], 'required'],
+
+        ];
+    }
+
+    public function scenarios()
+    {
+        return ArrayHelper::merge(parent::scenarios(), [
+            'prepare' => ['price', 'currency', 'period'],
+            'created' => ['price', 'currency', 'period', 'token'],
+        ]);
+    }
 
     /**
      * creates subscription url
@@ -29,8 +75,12 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
      */
     public function prepareSubscriptionUrl($description = null)
     {
+        $this->setScenario('prepare');
+        if (!$this->validate()) {
+            return false;
+        }
         if (is_null($description)) {
-            $description = 'This is subscription flow. Be careful before accept it';
+            $description = 'This is subscription flow. Be careful before accept it. Price is '.$this->price.' '.$this->currency.' and periodicity of payment is '.$this->period.' days.';
         }
         $settings = PaypalSettings::find()->one();
         $config = [
@@ -67,7 +117,10 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
 
         $ECResponse = $paypalService->SetExpressCheckout($setECReq);
         if (strtolower($ECResponse->Ack) == 'success') {
+            $this->setScenario('created');
             $this->token = $ECResponse->Token;
+            $this->status = self::STATUS_CREATED_BY_SITE;
+            $this->save();
         }
         if (empty($this->paymentUrl)) {
             return false;
@@ -105,5 +158,23 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     public function getToken()
     {
         return $this->token;
+    }
+
+    /**
+     * initializes new model by default values
+     */
+    public function newRecord()
+    {
+        if (Yii::$app->user->isGuest) {
+            return false;
+        }
+            
+        $currentUser = Yii::$app->user->identity;
+
+        $this->setAttributes([
+            'user_id' => $currentUser->id,
+            'status' => self::STATUS_INITIALIZED,
+            'currency' => $this->currency,
+        ]);
     }
 }

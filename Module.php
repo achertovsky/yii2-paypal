@@ -67,6 +67,7 @@ class Module extends \yii\base\Module
         $paypal->ipnUrl = $this->ipnUrl;
         $paypal->currency = $this->currency;
         $paypal->ECVersion = $this->ECVersion;
+        $paypal->newRecord();
         return $paypal;
     }
 
@@ -81,6 +82,26 @@ class Module extends \yii\base\Module
         $subscription->cancelUrl = $this->cancelUrl;
         $subscription->currency = $this->currency;
         $subscription->ECVersion = $this->ECVersion;
+        return $subscription;
+    }
+
+    /**
+     * find existing record in DB by token and fills the model
+     * @param string $token
+     * @return achertovsky\paypal\models\PaypalExpressPayment
+     */
+    public function getPaypalSubscriptionExpressByToken($token)
+    {
+        $subscription = call_user_func([
+            $this->modelMap['PaypalExpressPayment'],
+            'findByToken'
+        ], $token);
+        $subscription->expressSuccessUrl = $this->expressSuccessUrl;
+        $subscription->cancelUrl = $this->cancelUrl;
+        $subscription->ipnUrl = $this->ipnUrl;
+        $subscription->currency = $this->currency;
+        $subscription->ECVersion = $this->ECVersion;
+        $subscription->newRecord();
         return $subscription;
     }
 }

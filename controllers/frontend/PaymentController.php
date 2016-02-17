@@ -5,6 +5,8 @@ namespace achertovsky\paypal\controllers\frontend;
 use yii\filters\AccessControl;
 use Yii;
 use achertovsky\paypal\models\PaypalExpressPayment;
+use yii\web\BadRequestHttpException;
+use achertovsky\paypal\models\PaypalSubscriptionExpress;
 
 class PaymentController extends \yii\web\Controller
 {
@@ -109,10 +111,18 @@ class PaymentController extends \yii\web\Controller
             throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
         if (!is_null($modelId)) {
-            $paypal = PaypalExpressPayment::findOne($modelId);
+            $model = PaypalSubscriptionExpress::findOne($modelId);
+            $subscription = Yii::$app->getModule('payment')->getPaypalSubscriptionExpress();
+            $subscription->setAttributes($model->getAttributes());
+            $subscription->id = $model->id;
+            $subscription->isNewRecord = false;
         } else {
             $subscription = Yii::$app->getModule('payment')->getPaypalSubscriptionExpress();
-            $subscription->payment_price = $price;
+            $subscription->period = $period;
+            $subscription->price = $price;
+        }
+        if (empty($subscription)) {
+            throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
         try {
             if ($subscription->prepareSubscriptionUrl()) {
@@ -123,5 +133,6 @@ class PaymentController extends \yii\web\Controller
         } catch (Exception $ex) {
             throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
+        throw new BadRequestHttpException('Something went wrong');
     }
 }

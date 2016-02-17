@@ -102,7 +102,6 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
             'status' => self::STATUS_INITIALIZED,
             'currency' => $this->currency,
         ]);
-            
     }
     
     public $expressSuccessUrl;
