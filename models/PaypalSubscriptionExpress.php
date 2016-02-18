@@ -12,10 +12,16 @@ use SetExpressCheckoutRequestType;
 use SetExpressCheckoutReq;
 use yii\helpers\ArrayHelper;
 use yii\behaviors\TimestampBehavior;
-
+use Yii;
+use RecurringPaymentsProfileDetailsType;
+use BillingPeriodDetailsType;
+use ScheduleDetailsType;
+use CreateRecurringPaymentsProfileRequestDetailsType;
+use CreateRecurringPaymentsProfileRequestType;
+use CreateRecurringPaymentsProfileReq;
+use GetRecurringPaymentsProfileDetailsRequest;
 
 /**
- * 
  * @param int $user_id
  * @param double $price
  * @param string $token
@@ -25,6 +31,7 @@ use yii\behaviors\TimestampBehavior;
  * @param int $updated_at
  * @param string $status
  * @param text $errors
+ * @param text $description
  */
 class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
 {
@@ -34,6 +41,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     const STATUS_INITIALIZED = 'INITIALIZED';
     const STATUS_CREATED_BY_SITE = 'CREATED_BY_SITE';
     const STATUS_ERROR = 'ERROR';
+    const STATUS_SUCCESS = 'SUCCESS';
 
     public $subscriptionUrl;
     public $cancelUrl;
@@ -52,20 +60,26 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     *  @inheritdoc 
+     */
     public function rules()
     {
         return [
             [['user_id', 'created_at', 'updated_at', 'period'], 'integer', 'min' => 0],
-            [['price', 'currency', 'period', 'token'], 'required'],
-
+            [['errors', 'description'], 'string'],
+            ['status', 'safe'],
+            [['price', 'currency', 'period', 'token', 'description'], 'required'],
         ];
     }
 
+    /**
+     *  @inheritdoc 
+     */
     public function scenarios()
     {
         return ArrayHelper::merge(parent::scenarios(), [
-            'prepare' => ['price', 'currency', 'period'],
-            'created' => ['price', 'currency', 'period', 'token'],
+            'prepare' => ['price', 'currency', 'description', 'period'],
         ]);
     }
 
@@ -75,13 +89,17 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
      */
     public function prepareSubscriptionUrl($description = null)
     {
+        if (is_null($description)) {
+            $description = 'This is subscription flow. Be careful before accept it. Price is '.$this->price.' '.$this->currency.' and periodicity of payment is '.$this->period.' days.';
+        }
+        if (empty($this->description)) {
+            $this->description = $description;
+        }
         $this->setScenario('prepare');
         if (!$this->validate()) {
             return false;
         }
-        if (is_null($description)) {
-            $description = 'This is subscription flow. Be careful before accept it. Price is '.$this->price.' '.$this->currency.' and periodicity of payment is '.$this->period.' days.';
-        }
+        $this->setScenario('default');
         $settings = PaypalSettings::find()->one();
         $config = [
             'mode' => $settings->mode ? 'live' : 'sandbox',
@@ -105,7 +123,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         $setECReqDetails->ReturnURL = $this->successUrl;
           
         $billingAgreementDetails = new BillingAgreementDetailsType('RecurringPayments');
-        $billingAgreementDetails->BillingAgreementDescription = $description;
+        $billingAgreementDetails->BillingAgreementDescription = $this->description;
         $setECReqDetails->BillingAgreementDetails = array($billingAgreementDetails);
 
         $setECReqType = new SetExpressCheckoutRequestType();
@@ -117,7 +135,6 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
 
         $ECResponse = $paypalService->SetExpressCheckout($setECReq);
         if (strtolower($ECResponse->Ack) == 'success') {
-            $this->setScenario('created');
             $this->token = $ECResponse->Token;
             $this->status = self::STATUS_CREATED_BY_SITE;
             $this->save();
@@ -176,5 +193,81 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             'status' => self::STATUS_INITIALIZED,
             'currency' => $this->currency,
         ]);
+    }
+
+    /**
+     * @param string $token
+     * @return modules\payment\models\PaypalSubscriptionExpress
+     */
+    public static function findByToken($token)
+    {
+        return self::find()->where([
+            'token' => $token
+        ])->one();
+    }
+
+    /**
+     * creates subscription on ebay
+     * @return boolean
+     */
+    public function startSubscription()
+    {
+        if (!$this->validate()) {
+            return false;
+        }
+
+        $settings = PaypalSettings::find()->one();
+        $config = [
+            'mode' => $settings->mode ? 'live' : 'sandbox',
+            'acct1.UserName' => $settings->api_username,
+            'acct1.Password' => $settings->api_password,
+            'acct1.Signature' => $settings->api_signature,
+        ];
+
+        $profileDetails = new RecurringPaymentsProfileDetailsType();
+        $profileDetails->BillingStartDate = gmdate("Y-m-d H:i:s");;
+
+        $paymentBillingPeriod = new BillingPeriodDetailsType();
+        $paymentBillingPeriod->BillingFrequency = $this->period;
+        $paymentBillingPeriod->BillingPeriod = "Day";
+        $paymentBillingPeriod->Amount = new BasicAmountType("USD", $this->price);
+
+        $scheduleDetails = new ScheduleDetailsType();
+        $scheduleDetails->Description = $this->description;
+        $scheduleDetails->PaymentPeriod = $paymentBillingPeriod;
+
+        $createRPProfileRequestDetails = new CreateRecurringPaymentsProfileRequestDetailsType();
+        $createRPProfileRequestDetails->Token = $this->token;
+        $createRPProfileRequestDetails->ScheduleDetails = $scheduleDetails;
+        $createRPProfileRequestDetails->RecurringPaymentsProfileDetails = $profileDetails;
+
+        $createRPProfileRequest = new CreateRecurringPaymentsProfileRequestType();
+        $createRPProfileRequest->CreateRecurringPaymentsProfileRequestDetails = $createRPProfileRequestDetails;
+
+        $createRPProfileReq = new CreateRecurringPaymentsProfileReq();
+        $createRPProfileReq->CreateRecurringPaymentsProfileRequest = $createRPProfileRequest;
+
+        $paypalService = new PayPalAPIInterfaceServiceService($config);
+        $createRPProfileResponse = $paypalService->CreateRecurringPaymentsProfile($createRPProfileReq);
+        if (strtolower($createRPProfileResponse->Ack) == 'failure') {
+            $this->errors = var_export($createRPProfileResponse->Errors, true);
+            $this->status = self::STATUS_ERROR;
+            $this->save();
+            Yii::error('Errors: '.var_export($createRPProfileResponse->Errors, true));
+            return false;
+        }
+        if (strtolower($createRPProfileResponse->Ack) == 'success') {
+            $this->status = self::STATUS_SUCCESS;
+            return $this->save();
+        }
+        return false;
+    }
+
+    public function isSubscriptionActive()
+    {
+        $req = GetRecurringPaymentsProfileDetailsRequest();
+
+        $createRPProfileReq = new PayPalAPIInterfaceServiceService();
+        $response = $paypalService->GetRecurringPaymentsProfileDetails($req);
     }
 }

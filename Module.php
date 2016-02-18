@@ -62,6 +62,9 @@ class Module extends \yii\base\Module
             $this->modelMap['PaypalExpressPayment'],
             'findByToken'
         ], $token);
+        if (empty($paypal)) {
+            return null;
+        }
         $paypal->expressSuccessUrl = $this->expressSuccessUrl;
         $paypal->cancelUrl = $this->cancelUrl;
         $paypal->ipnUrl = $this->ipnUrl;
@@ -82,6 +85,7 @@ class Module extends \yii\base\Module
         $subscription->cancelUrl = $this->cancelUrl;
         $subscription->currency = $this->currency;
         $subscription->ECVersion = $this->ECVersion;
+        $subscription->newRecord();
         return $subscription;
     }
 
@@ -93,12 +97,14 @@ class Module extends \yii\base\Module
     public function getPaypalSubscriptionExpressByToken($token)
     {
         $subscription = call_user_func([
-            $this->modelMap['PaypalExpressPayment'],
+            $this->modelMap['PaypalSubscriptionExpress'],
             'findByToken'
         ], $token);
-        $subscription->expressSuccessUrl = $this->expressSuccessUrl;
+        if (empty($subscription)) {
+            return null;
+        }
+        $subscription->successUrl = $this->subscriptionExpressSuccessUrl;
         $subscription->cancelUrl = $this->cancelUrl;
-        $subscription->ipnUrl = $this->ipnUrl;
         $subscription->currency = $this->currency;
         $subscription->ECVersion = $this->ECVersion;
         $subscription->newRecord();

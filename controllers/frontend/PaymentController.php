@@ -91,7 +91,7 @@ class PaymentController extends \yii\web\Controller
         if ($payment->doCheckout($PayerID)) {
             Yii::$app->getSession()->setFlash('success', 'Congratulations. You have successfully payed.');
         } else {
-            Yii::$app->getSession()->setFlash('error', 'Sorry, but your payment was unsuccesfull');
+            Yii::$app->getSession()->setFlash('error', 'Sorry, but your payment was unsuccesfull.');
         }
         
         return $this->goHome();
@@ -102,10 +102,24 @@ class PaymentController extends \yii\web\Controller
         if (!Yii::$app->getModule('payment')->enableSubscriptionExpress || is_null($token)) {
             throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
-        //TODO continue flow
+        $subscription = Yii::$app->getModule('payment')->getPaypalSubscriptionExpressByToken($token);
+        if (empty($subscription)) {
+            throw new \yii\web\NotFoundHttpException('Page Not Found');
+        }
+        try {
+            if ($subscription->startSubscription()) {
+                Yii::$app->getSession()->setFlash('success', 'Congratulations. You have successfully subscribed.');
+            } else {
+                Yii::$app->getSession()->setFlash('error', 'Sorry, but your subscription was unsuccesfull.');
+            }
+        } catch (Exception $ex) {
+            $subscription->delete();
+            throw new \yii\web\NotFoundHttpException('Page Not Found');
+        }
+        return $this->goHome();
     }
 
-    public function actionSubscriptionExpressCreate($price, $modelId = null, $period = 30, $description = 'This is subscription flow. Be careful before accept it')
+    public function actionSubscriptionExpressCreate($price, $modelId = null, $period = 30, $description = null)
     {
         if (!Yii::$app->getModule('payment')->enableSubscriptionExpress) {
             throw new \yii\web\NotFoundHttpException('Page Not Found');
