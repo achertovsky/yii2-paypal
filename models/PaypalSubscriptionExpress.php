@@ -19,7 +19,7 @@ use ScheduleDetailsType;
 use CreateRecurringPaymentsProfileRequestDetailsType;
 use CreateRecurringPaymentsProfileRequestType;
 use CreateRecurringPaymentsProfileReq;
-use GetRecurringPaymentsProfileDetailsRequest;
+use GetRecurringPaymentsProfileDetailsRequestType;
 
 /**
  * @param int $user_id
@@ -32,6 +32,7 @@ use GetRecurringPaymentsProfileDetailsRequest;
  * @param string $status
  * @param text $errors
  * @param text $description
+ * @param string $paypal_profile_id
  */
 class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
 {
@@ -42,6 +43,9 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     const STATUS_CREATED_BY_SITE = 'CREATED_BY_SITE';
     const STATUS_ERROR = 'ERROR';
     const STATUS_SUCCESS = 'SUCCESS';
+
+    const SUBSCRIPTION_STATUS_ACTIVE = 1;
+    const SUBSCRIPTION_STATUS_UNACTIVE = 0;
 
     public $subscriptionUrl;
     public $cancelUrl;
@@ -66,8 +70,8 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'created_at', 'updated_at', 'period'], 'integer', 'min' => 0],
-            [['errors', 'description'], 'string'],
+            [['user_id', 'created_at', 'updated_at', 'period', 'subscription_status'], 'integer', 'min' => 0],
+            [['errors', 'description', 'paypal_profile_id'], 'string'],
             ['status', 'safe'],
             [['price', 'currency', 'period', 'token', 'description'], 'required'],
         ];
@@ -258,6 +262,8 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         }
         if (strtolower($createRPProfileResponse->Ack) == 'success') {
             $this->status = self::STATUS_SUCCESS;
+            $this->subscription_status = self::SUBSCRIPTION_STATUS_ACTIVE;
+            $this->paypal_profile_id = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
             return $this->save();
         }
         return false;
@@ -265,9 +271,9 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
 
     public function isSubscriptionActive()
     {
-        $req = GetRecurringPaymentsProfileDetailsRequest();
+        $req = new GetRecurringPaymentsProfileDetailsRequestType();
 
-        $createRPProfileReq = new PayPalAPIInterfaceServiceService();
-        $response = $paypalService->GetRecurringPaymentsProfileDetails($req);
+        $service = new PayPalAPIInterfaceServiceService();
+        $response = $service->GetRecurringPaymentsProfileDetails($req);
     }
 }

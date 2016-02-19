@@ -60,7 +60,7 @@ $numericValue = 15;
 $numericValue = 15.2;
 return $this->redirect(Url::toRoute(['/payment/payment/pay', 'price' => $numericValue]));
 ```
-METHOD 2:
+METHOD 2 (more secured):
 ```
 use yii\helpers\Url;
 use achertovsky\paypal\models\PaypalExpressPayment;
