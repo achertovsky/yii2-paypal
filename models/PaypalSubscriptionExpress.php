@@ -20,6 +20,7 @@ use CreateRecurringPaymentsProfileRequestDetailsType;
 use CreateRecurringPaymentsProfileRequestType;
 use CreateRecurringPaymentsProfileReq;
 use GetRecurringPaymentsProfileDetailsRequestType;
+use GetRecurringPaymentsProfileDetailsReq;
 
 /**
  * @param int $user_id
@@ -269,11 +270,33 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         return false;
     }
 
+    /**
+     * @return boolean
+     */
     public function isSubscriptionActive()
     {
-        $req = new GetRecurringPaymentsProfileDetailsRequestType();
+        $settings = PaypalSettings::find()->one();
+        $config = [
+            'mode' => $settings->mode ? 'live' : 'sandbox',
+            'acct1.UserName' => $settings->api_username,
+            'acct1.Password' => $settings->api_password,
+            'acct1.Signature' => $settings->api_signature,
+        ];
 
-        $service = new PayPalAPIInterfaceServiceService();
+        $reqType = new GetRecurringPaymentsProfileDetailsRequestType();
+        $reqType->ProfileID = $this->paypal_profile_id;
+        $req = new GetRecurringPaymentsProfileDetailsReq();
+        $req->GetRecurringPaymentsProfileDetailsRequest = $reqType;
+
+        $service = new PayPalAPIInterfaceServiceService($config);
         $response = $service->GetRecurringPaymentsProfileDetails($req);
+
+        if (strtolower($response->Ack) == 'success') {
+            if ($response->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus == 'ActiveProfile') {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
