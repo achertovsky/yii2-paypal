@@ -71,7 +71,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'created_at', 'updated_at', 'period', 'subscription_status'], 'integer', 'min' => 0],
+            [['user_id', 'created_at', 'updated_at', 'period', 'subscription_status', 'next_billing_gmt', 'cycles_completed'], 'integer', 'min' => 0],
             [['errors', 'description', 'paypal_profile_id'], 'string'],
             ['status', 'safe'],
             [['price', 'currency', 'period', 'token', 'description'], 'required'],
@@ -292,7 +292,11 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         $response = $service->GetRecurringPaymentsProfileDetails($req);
 
         if (strtolower($response->Ack) == 'success') {
+            $test = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->OutstandingBalance;
             if ($response->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus == 'ActiveProfile') {
+                $this->cycles_completed = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
+                $this->next_billing_gmt = strtotime($response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NextBillingDate);
+                $this->save();
                 return true;
             }
         }
