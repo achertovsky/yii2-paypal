@@ -36,6 +36,9 @@ php yii migrate/up --migrationPath=@vendor/achertovsky/paypal-yii2/migrations
 ```
 Usage
 ======
+
+_Currently application is in sandbox. You can edit values in DB or using GUI in backend (if you have backend configured)_  
+
 to start using it - please, add it to your modules section
 
 you can use your attribute names.
