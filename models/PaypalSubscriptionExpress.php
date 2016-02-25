@@ -84,7 +84,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     public function scenarios()
     {
         return ArrayHelper::merge(parent::scenarios(), [
-            'prepare' => ['price', 'currency', 'description', 'period'],
+            'prepare' => ['user_id', 'price', 'currency', 'description', 'period'],
         ]);
     }
 
@@ -96,6 +96,8 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     {
         if (is_null($description)) {
             $description = 'This is subscription flow. Be careful before accept it. Price is '.$this->price.' '.$this->currency.' and periodicity of payment is '.$this->period.' days.';
+        } else {
+            $this->description = $description;
         }
         if (empty($this->description)) {
             $this->description = $description;
@@ -299,13 +301,17 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                 if (gmmktime() < $nextBillingGMTTimestamp && $cyclesCompleted == $this->cycles_completed) {
                     return true;
                 } else {
-                    if ($this->cycles_completed == $cyclesCompleted) {
+                    if ($this->cycles_completed == $cyclesCompleted || $cyclesCompleted == 0) {
                         return false;
                     }
                     $this->cycles_completed = $cyclesCompleted;
                     $this->next_billing_gmt = $nextBillingGMTTimestamp;
                     return $this->save();
                 }
+            } else {
+                $this->subscription_status = SUBSCRIPTION_STATUS_UNACTIVE;
+                $this->save();
+                return false;
             }
         }
         
