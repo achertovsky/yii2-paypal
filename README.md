@@ -44,10 +44,6 @@ fox example:
 ```
 'payment' => [
     'class' => 'achertovsky\paypal\Module',
-    //here is arrays like in Url::toRoute()
-    'ipnUrl' => ['/payment/payment/payment-notification'],
-    'expressSuccessUrl' => ['/payment/payment/express-payment'],
-    'cancelUrl' => ['/', '#' => 'cancel'],
 ],
 ```
 [EXPRESS PAYMENT HOW TO](https://github.com/achertovsky/paypal-yii2/wiki/Express-payment)  
