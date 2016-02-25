@@ -5,7 +5,8 @@ Description
 Module for easy yii2 payments
 
 Features:  
-Now only express payment
+Express payment  
+Subscription (via express payment)
 
 I hope it will be useful for you. 
 
@@ -43,55 +44,28 @@ fox example:
 ```
 'payment' => [
     'class' => 'achertovsky\paypal\Module',
-    //here is arrays like in Url::toRoute()
-    'ipnUrl' => ['/payment/payment/payment-notification'],
-    'expressSuccessUrl' => ['/payment/payment/express-payment'],
-    'cancelUrl' => ['/', '#' => 'cancel'],
 ],
 ```
-EXPRESS PAYMENT HOW TO:  
-METHOD 1:  
-Just redirect user to
-```
-use yii\helpers\Url;
+[EXPRESS PAYMENT HOW TO](https://github.com/achertovsky/paypal-yii2/wiki/Express-payment)  
 
-$numericValue = 15;
-//or
-$numericValue = 15.2;
-return $this->redirect(Url::toRoute(['/payment/payment/pay', 'price' => $numericValue]));
+**Configuration variables listing**
 ```
-METHOD 2 (more secured):
-```
-use yii\helpers\Url;
-use achertovsky\paypal\models\PaypalExpressPayment;
-
-$numericValue = 15;
-//or
-$numericValue = 15.2;
-
-$payment = new PaypalExpressPayment();
-$payment->setScenario('prepare');
-$payment->setAttributes([
-	'user_id' => 1,
-	'payment_price' => $numericValue,
-	'currency' => 'USD',
-]);
-$payment->save();
-return $this->redirect(Url::toRoute(['/payment/payment/pay', 'price' => $numericValue, 'modelId' => $payment->id]));
-```
-Configuration variables listing
-======
-```
+//here is arrays like for Url::toRoute()
 public $ipnUrl = ['/payment/payment/payment-notification'];
 public $expressSuccessUrl = ['/payment/payment/express-payment'];
 public $subscriptionExpressSuccessUrl = ['/payment/payment/subscription-express-confirm'];
 public $cancelUrl = ['/', '#' => 'cancel'];
+//default currency
 public $currency = 'USD';
+//models for this module
 public $modelMap = [
     'PaypalExpressPayment' => 'achertovsky\paypal\models\PaypalExpressPayment',
     'PaypalSubscriptionExpress' => 'achertovsky\paypal\models\PaypalSubscriptionExpress',
 ];
+//paypal express checkout version
 public $ECVersion = '104.0';
+//boolean which indicates is express payment is enabled in app
 public $enableExpressPayment = true;
+//boolean which indicates is subscription flow is enabled in app
 public $enableSubscriptionExpress = true;
 ```
