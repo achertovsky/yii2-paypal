@@ -48,8 +48,7 @@ fox example:
 ```
 [EXPRESS PAYMENT HOW TO](https://github.com/achertovsky/paypal-yii2/wiki/Express-payment)  
 
-Configuration variables listing
-======
+**Configuration variables listing**
 ```
 public $ipnUrl = ['/payment/payment/payment-notification'];
 public $expressSuccessUrl = ['/payment/payment/express-payment'];
