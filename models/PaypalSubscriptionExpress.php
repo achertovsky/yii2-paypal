@@ -294,10 +294,18 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         if (strtolower($response->Ack) == 'success') {
             $test = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->OutstandingBalance;
             if ($response->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus == 'ActiveProfile') {
-                $this->cycles_completed = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
-                $this->next_billing_gmt = strtotime($response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NextBillingDate);
-                $this->save();
-                return true;
+                $nextBillingGMTTimestamp = strtotime($response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NextBillingDate);
+                $cyclesCompleted = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
+                if (gmmktime() < $nextBillingGMTTimestamp && $cyclesCompleted == $this->cycles_completed) {
+                    return true;
+                } else {
+                    if ($this->cycles_completed == $cyclesCompleted) {
+                        return false;
+                    }
+                    $this->cycles_completed = $cyclesCompleted;
+                    $this->next_billing_gmt = $nextBillingGMTTimestamp;
+                    return $this->save();
+                }
             }
         }
         
