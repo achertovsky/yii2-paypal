@@ -50,6 +50,7 @@ fox example:
 ],
 ```
 [EXPRESS PAYMENT HOW TO](https://github.com/achertovsky/paypal-yii2/wiki/Express-payment)  
+[SUBSCRIPTION VIA EXPRESS PAYMENT HOW TO](https://github.com/achertovsky/paypal-yii2/wiki/Subscription-via-express-payment)  
 
 **Configuration variables listing**
 ```
