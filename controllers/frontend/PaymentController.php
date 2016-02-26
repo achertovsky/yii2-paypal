@@ -55,6 +55,9 @@ class PaymentController extends \yii\web\Controller
         if (!Yii::$app->getModule('payment')->enableExpressPayment) {
             throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
+        if ($modelId == 'null') {
+            $modelId = null;
+        }
         if (!is_null($modelId)) {
             $model = PaypalExpressPayment::findOne($modelId);
             $paypal = Yii::$app->getModule('payment')->paypalExpressPayment;
@@ -123,6 +126,9 @@ class PaymentController extends \yii\web\Controller
     {
         if (!Yii::$app->getModule('payment')->enableSubscriptionExpress) {
             throw new \yii\web\NotFoundHttpException('Page Not Found');
+        }
+        if ($modelId == 'null') {
+            $modelId = null;
         }
         if (!is_null($modelId)) {
             $model = PaypalSubscriptionExpress::findOne($modelId);
