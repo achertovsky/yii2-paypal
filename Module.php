@@ -10,28 +10,36 @@ class Module extends \yii\base\Module
 {
     use ModuleTrait;
 
-    //here is arrays like in Url::toRoute()
+    //here is arrays like for Url::toRoute()
     public $ipnUrl = ['/payment/payment/payment-notification'];
     public $expressSuccessUrl = ['/payment/payment/express-payment'];
     public $subscriptionExpressSuccessUrl = ['/payment/payment/subscription-express-confirm'];
     public $cancelUrl = ['/', '#' => 'cancel'];
+    //default currency
     public $currency = 'USD';
+    //models for this module
     public $modelMap = [
         'PaypalExpressPayment' => 'achertovsky\paypal\models\PaypalExpressPayment',
         'PaypalSubscriptionExpress' => 'achertovsky\paypal\models\PaypalSubscriptionExpress',
     ];
+    //paypal express checkout version
     public $ECVersion = '104.0';
+    //boolean which indicates is express payment is enabled in app
     public $enableExpressPayment = true;
+    //boolean which indicates is subscription flow is enabled in app
     public $enableSubscriptionExpress = true;
+
+    //getter to receive users name. it must be assigned to your option
+    public $subscriptionUsernameGetter = 'username';
+    //defines if user receive notifications via email when subscription status changed
+    public $subscriptionEmailNotification = false;
     
     public function __construct($id, $parent = null, $config = array())
     {
         parent::__construct($id, $parent, $config);
         $this->ipnUrl = Yii::$app->urlManager->createAbsoluteUrl($this->ipnUrl);
         $this->expressSuccessUrl = Yii::$app->urlManager->createAbsoluteUrl($this->expressSuccessUrl);
-        $this->subscriptionExpressSuccessUrl
- = Yii::$app->urlManager->createAbsoluteUrl($this->subscriptionExpressSuccessUrl
-);
+        $this->subscriptionExpressSuccessUrl  = Yii::$app->urlManager->createAbsoluteUrl($this->subscriptionExpressSuccessUrl);
         $this->cancelUrl = Yii::$app->urlManager->createAbsoluteUrl($this->cancelUrl);
     }
     

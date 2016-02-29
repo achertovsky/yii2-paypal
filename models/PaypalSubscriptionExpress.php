@@ -304,6 +304,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                     if ($this->cycles_completed == $cyclesCompleted || $cyclesCompleted == 0) {
                         return false;
                     }
+                    $this->subscription_status = SUBSCRIPTION_STATUS_ACTIVE;
                     $this->cycles_completed = $cyclesCompleted;
                     $this->next_billing_gmt = $nextBillingGMTTimestamp;
                     return $this->save();
