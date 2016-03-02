@@ -223,8 +223,11 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
      */
     public function startSubscription()
     {
-        if (!$this->validate()) {
+        if (!$this->validate() || $this->status == self::STATUS_ERROR) {
             return false;
+        }
+        if ($this->status == self::STATUS_SUCCESS) {
+            return true;
         }
 
         $settings = PaypalSettings::find()->one();
