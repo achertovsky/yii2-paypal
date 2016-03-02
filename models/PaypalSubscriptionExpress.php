@@ -346,9 +346,17 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         $response = $service->ManageRecurringPaymentsProfileStatus($req);
 
         if (strtolower($response->Ack) == 'success') {
-            $this->subscription_status = SUBSCRIPTION_STATUS_CANCELLED;
+            $this->subscription_status = self::SUBSCRIPTION_STATUS_CANCELLED;
             return $this->save();
+        } else {
+            foreach ($response->Errors as $error) {
+                if ($error->ErrorCode == '11556') {
+                    $this->subscription_status = self::SUBSCRIPTION_STATUS_CANCELLED;
+                    return $this->save();
+                }
+            }
         }
+
         
         return false;
     }
