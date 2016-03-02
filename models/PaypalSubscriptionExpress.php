@@ -21,6 +21,9 @@ use CreateRecurringPaymentsProfileRequestType;
 use CreateRecurringPaymentsProfileReq;
 use GetRecurringPaymentsProfileDetailsRequestType;
 use GetRecurringPaymentsProfileDetailsReq;
+use ManageRecurringPaymentsProfileStatusReq;
+use ManageRecurringPaymentsProfileStatusRequestType;
+use ManageRecurringPaymentsProfileStatusRequestDetailsType;
 
 /**
  * @param int $user_id
@@ -47,6 +50,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
 
     const SUBSCRIPTION_STATUS_ACTIVE = 1;
     const SUBSCRIPTION_STATUS_UNACTIVE = 0;
+    const SUBSCRIPTION_STATUS_CANCELLED = 3;
 
     public $subscriptionUrl;
     public $cancelUrl;
@@ -314,6 +318,36 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                 $this->save();
                 return false;
             }
+        }
+        
+        return false;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function cancelSubscription()
+    {
+        $settings = PaypalSettings::find()->one();
+        $config = [
+            'mode' => $settings->mode ? 'live' : 'sandbox',
+            'acct1.UserName' => $settings->api_username,
+            'acct1.Password' => $settings->api_password,
+            'acct1.Signature' => $settings->api_signature,
+        ];
+
+        $details = new ManageRecurringPaymentsProfileStatusRequestDetailsType($this->paypal_profile_id, 'Cancel');
+        $reqType = new ManageRecurringPaymentsProfileStatusRequestType();
+        $reqType->ManageRecurringPaymentsProfileStatusRequestDetails = $details;
+        $req = new ManageRecurringPaymentsProfileStatusReq();
+        $req->ManageRecurringPaymentsProfileStatusRequest = $reqType;
+
+        $service = new PayPalAPIInterfaceServiceService($config);
+        $response = $service->ManageRecurringPaymentsProfileStatus($req);
+
+        if (strtolower($response->Ack) == 'success') {
+            $this->subscription_status = SUBSCRIPTION_STATUS_CANCELLED;
+            return $this->save();
         }
         
         return false;
