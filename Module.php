@@ -115,7 +115,6 @@ class Module extends \yii\base\Module
         $subscription->cancelUrl = $this->cancelUrl;
         $subscription->currency = $this->currency;
         $subscription->ECVersion = $this->ECVersion;
-        $subscription->newRecord();
         return $subscription;
     }
 }
