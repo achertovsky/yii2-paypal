@@ -311,13 +311,13 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                     if ($this->cycles_completed == $cyclesCompleted || $cyclesCompleted == 0) {
                         return false;
                     }
-                    $this->subscription_status = SUBSCRIPTION_STATUS_ACTIVE;
+                    $this->subscription_status = self::SUBSCRIPTION_STATUS_ACTIVE;
                     $this->cycles_completed = $cyclesCompleted;
                     $this->next_billing_gmt = $nextBillingGMTTimestamp;
                     return $this->save();
                 }
             } else {
-                $this->subscription_status = SUBSCRIPTION_STATUS_UNACTIVE;
+                $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
                 $this->save();
                 if (gmmktime() < $nextBillingGMTTimestamp && $cyclesCompleted == $this->cycles_completed) {
                     return true;
