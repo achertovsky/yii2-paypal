@@ -5,9 +5,23 @@ namespace achertovsky\paypal;
 use achertovsky\paypal\components\ModuleTrait;
 use yii\helpers\Url;
 use Yii;
+use yii\base\BootstrapInterface;
 
-class Module extends \yii\base\Module
+class Module extends \yii\base\Module implements BootstrapInterface
 {
+    /**
+     * for console commands
+     */
+    public function bootstrap($app)
+    {
+        if ($app instanceof \yii\console\Application) {
+            $app->controllerMap[$this->id] = [
+                'class' => 'achertovsky\paypal\console\controllers\CronController',
+                'module' => $this,
+            ];
+        }
+    }
+
     use ModuleTrait;
 
     //here is arrays like for Url::toRoute()
