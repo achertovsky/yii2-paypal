@@ -1,7 +1,7 @@
 <?php
 
 use yii\bootstrap\ActiveForm;
-use modules\payment\models\PaypalSettings;
+use achertovsky\paypal\models\PaypalSettings;
 use yii\helpers\Html;
 
 ?>
