@@ -11,13 +11,6 @@ class Module extends \yii\base\Module implements BootstrapInterface
 {
 
     public $cronControllerPath = 'achertovsky\paypal\controllers\console\CronController';
-    public $controllerNamespace = 'achertovsky\paypal\controllers';
-
- 
-    public function init()
-    {
-        parent::init();
-    }
 
     /**
      * for console commands
