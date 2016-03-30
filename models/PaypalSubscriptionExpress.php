@@ -284,6 +284,9 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
      */
     public function isSubscriptionActive()
     {
+        if ($this->subscription_status == self::SUBSCRIPTION_STATUS_CANCELLED) {
+            return false;
+        }
         $settings = PaypalSettings::find()->one();
         $config = [
             'mode' => $settings->mode ? 'live' : 'sandbox',
@@ -302,7 +305,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
 
         if (strtolower($response->Ack) == 'success') {
             $nextBillingGMTTimestamp = strtotime($response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NextBillingDate);
-            if ($response->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus == 'ActiveProfile') {
+            if (($profileStatus = $response->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus) == 'ActiveProfile') {
                 $cyclesCompleted = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
                 if (gmmktime() < $nextBillingGMTTimestamp && $cyclesCompleted == $this->cycles_completed) {
                     return true;
@@ -316,7 +319,11 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                     return $this->save();
                 }
             } else {
-                $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
+                if ($profileStatus == 'CancelledProfile') {
+                    $this->subscription_status = self::SUBSCRIPTION_STATUS_CANCELLED;
+                } else {
+                    $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
+                }
                 $this->save();
                 if (gmmktime() < $nextBillingGMTTimestamp && $cyclesCompleted == $this->cycles_completed) {
                     return true;
