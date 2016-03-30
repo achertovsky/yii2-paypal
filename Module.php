@@ -9,6 +9,16 @@ use yii\base\BootstrapInterface;
 
 class Module extends \yii\base\Module implements BootstrapInterface
 {
+
+    public $cronControllerPath = 'achertovsky\paypal\controllers\console\CronController';
+    public $controllerNamespace = 'achertovsky\paypal\controllers';
+
+ 
+    public function init()
+    {
+        parent::init();
+    }
+
     /**
      * for console commands
      */
@@ -16,7 +26,7 @@ class Module extends \yii\base\Module implements BootstrapInterface
     {
         if ($app instanceof \yii\console\Application) {
             $app->controllerMap[$this->id] = [
-                'class' => 'achertovsky\paypal\console\controllers\CronController',
+                'class' => $this->cronControllerPath,
                 'module' => $this,
             ];
         }
