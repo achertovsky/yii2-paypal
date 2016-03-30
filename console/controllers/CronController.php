@@ -1,6 +1,6 @@
 <?php
 
-namespace achertovsky\paypal\controllers\console;
+namespace achertovsky\paypal\console\controllers;
 
 use Yii;
 use achertovsky\paypal\models\PaypalSubscriptionExpress;
