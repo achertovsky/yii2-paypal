@@ -51,6 +51,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
 
     const SUBSCRIPTION_STATUS_ACTIVE = 1;
     const SUBSCRIPTION_STATUS_UNACTIVE = 0;
+    const SUBSCRIPTION_STATUS_PENDING = 2;
     const SUBSCRIPTION_STATUS_CANCELLED = 3;
 
     public $subscriptionUrl;
@@ -319,6 +320,8 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             } else {
                 if ($profileStatus == 'CancelledProfile') {
                     $this->subscription_status = self::SUBSCRIPTION_STATUS_CANCELLED;
+                } elseif ($profileStatus == 'PendingProfile') {
+                    $this->subscription_status = self::SUBSCRIPTION_STATUS_PENDING;
                 } else {
                     $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
                 }
