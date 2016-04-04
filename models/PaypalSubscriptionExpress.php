@@ -308,7 +308,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             $nextBillingGMTTimestamp = strtotime($response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NextBillingDate);
             if (($profileStatus = $response->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus) == 'ActiveProfile') {
                 $cyclesCompleted = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
-                if (gmmktime() < $nextBillingGMTTimestamp && $cyclesCompleted == $this->cycles_completed) {
+                if (gmmktime() < $nextBillingGMTTimestamp) {
                     return true;
                 } else {
                     $this->subscription_status = self::SUBSCRIPTION_STATUS_ACTIVE;
@@ -323,7 +323,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                     $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
                 }
                 $this->save();
-                if (gmmktime() < $nextBillingGMTTimestamp && $cyclesCompleted == $this->cycles_completed) {
+                if (gmmktime() < $nextBillingGMTTimestamp) {
                     return true;
                 }
                 return false;
