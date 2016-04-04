@@ -24,6 +24,7 @@ use GetRecurringPaymentsProfileDetailsReq;
 use ManageRecurringPaymentsProfileStatusReq;
 use ManageRecurringPaymentsProfileStatusRequestType;
 use ManageRecurringPaymentsProfileStatusRequestDetailsType;
+use ActivationDetailsType;
 
 /**
  * @param int $user_id
@@ -122,7 +123,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         $paymentDetails= new PaymentDetailsType();
 
         $orderTotal = new BasicAmountType();
-        $orderTotal->currencyID = 'USD';
+        $orderTotal->currencyID = $this->currency;
         $orderTotal->value = 0;
 
         $paymentDetails->OrderTotal = $orderTotal;
@@ -239,16 +240,19 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         ];
 
         $profileDetails = new RecurringPaymentsProfileDetailsType();
-        $profileDetails->BillingStartDate = gmdate("Y-m-d H:i:s");;
+        //start date will be after 10 min after current timestamp
+        $profileDetails->BillingStartDate = gmdate("Y-m-d H:i:s", time()+60*10);
 
         $paymentBillingPeriod = new BillingPeriodDetailsType();
         $paymentBillingPeriod->BillingFrequency = $this->period;
         $paymentBillingPeriod->BillingPeriod = "Day";
-        $paymentBillingPeriod->Amount = new BasicAmountType("USD", $this->price);
+        $paymentBillingPeriod->Amount = new BasicAmountType($this->currency, $this->price);
 
         $scheduleDetails = new ScheduleDetailsType();
         $scheduleDetails->Description = $this->description;
         $scheduleDetails->PaymentPeriod = $paymentBillingPeriod;
+        $scheduleDetails->ActivationDetails = new ActivationDetailsType();
+        $scheduleDetails->ActivationDetails->InitialAmount = new BasicAmountType($this->currency, $this->price);        
 
         $createRPProfileRequestDetails = new CreateRecurringPaymentsProfileRequestDetailsType();
         $createRPProfileRequestDetails->Token = $this->token;
@@ -284,9 +288,6 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
      */
     public function isSubscriptionActive()
     {
-        if ($this->subscription_status == self::SUBSCRIPTION_STATUS_CANCELLED) {
-            return false;
-        }
         $settings = PaypalSettings::find()->one();
         $config = [
             'mode' => $settings->mode ? 'live' : 'sandbox',
