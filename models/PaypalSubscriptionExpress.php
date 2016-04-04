@@ -310,9 +310,6 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                 if (gmmktime() < $nextBillingGMTTimestamp && $cyclesCompleted == $this->cycles_completed) {
                     return true;
                 } else {
-                    if ($this->cycles_completed == $cyclesCompleted || $cyclesCompleted == 0) {
-                        return false;
-                    }
                     $this->subscription_status = self::SUBSCRIPTION_STATUS_ACTIVE;
                     $this->cycles_completed = $cyclesCompleted;
                     $this->next_billing_gmt = $nextBillingGMTTimestamp;
