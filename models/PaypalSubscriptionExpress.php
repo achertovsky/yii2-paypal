@@ -290,6 +290,9 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
      */
     public function isSubscriptionActive()
     {
+        if (empty($this->paypal_profile_id)) {
+            $this->startSubscription();
+        }
         $settings = PaypalSettings::find()->one();
         $config = [
             'mode' => $settings->mode ? 'live' : 'sandbox',
