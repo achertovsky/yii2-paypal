@@ -278,7 +278,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         }
         if (strtolower($createRPProfileResponse->Ack) == 'success') {
             $this->status = self::STATUS_SUCCESS;
-            $this->subscription_status = self::SUBSCRIPTION_STATUS_ACTIVE;
+            $this->subscription_status = self::SUBSCRIPTION_STATUS_PENDING;
             $this->paypal_profile_id = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
             return $this->save();
         }
@@ -371,12 +371,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             $this->subscription_status = self::SUBSCRIPTION_STATUS_CANCELLED;
             return $this->save();
         } else {
-            foreach ($response->Errors as $error) {
-                if ($error->ErrorCode == '11556') {
-                    $this->subscription_status = self::SUBSCRIPTION_STATUS_CANCELLED;
-                    return $this->save();
-                }
-            }
+            $this->addError('subscription_status', $response->Errors[0]->ShortMessage);
         }
 
         
