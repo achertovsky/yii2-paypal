@@ -77,7 +77,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'created_at', 'updated_at', 'period', 'subscription_status', 'next_billing_gmt', 'cycles_completed'], 'integer', 'min' => 0],
+            [['user_id', 'created_at', 'updated_at', 'period', 'subscription_status', 'last_payment_date', 'cycles_completed'], 'integer', 'min' => 0],
             [['errors', 'description', 'paypal_profile_id'], 'string'],
             ['status', 'safe'],
             [['price', 'currency', 'period', 'token', 'description'], 'required'],
@@ -250,6 +250,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         $paymentBillingPeriod->Amount = new BasicAmountType($this->currency, $this->price);
 
         $scheduleDetails = new ScheduleDetailsType();
+        $scheduleDetails->MaxFailedPayments = 1;
         $scheduleDetails->Description = $this->description;
         $scheduleDetails->PaymentPeriod = $paymentBillingPeriod;
         $scheduleDetails->ActivationDetails = new ActivationDetailsType();
@@ -306,18 +307,23 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         $response = $service->GetRecurringPaymentsProfileDetails($req);
 
         if (strtolower($response->Ack) == 'success') {
-            $nextBillingGMTTimestamp = strtotime($response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NextBillingDate);
-            if (empty($nextBillingGMTTimestamp) && !empty($this->next_billing_gmt)) {
-                $nextBillingGMTTimestamp = $this->next_billing_gmt;
+            $lastPaymentDate = strtotime($response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->LastPaymentDate);
+            if (!empty($lastPaymentDate)) {
+                $mustBeStillActive = $lastPaymentDate + $this->period*24*60*60;
+            } else {
+                $mustBeStillActive = 0;
             }
+            $utcStr = gmdate("M d Y H:i:s", time());
+            $currentUtc = strtotime($utcStr);
+            
             if (($profileStatus = $response->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus) == 'ActiveProfile') {
                 $cyclesCompleted = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
-                if (gmmktime() < $nextBillingGMTTimestamp) {
+                if ($currentUtc < $mustBeStillActive) {
                     return true;
                 } else {
                     $this->subscription_status = self::SUBSCRIPTION_STATUS_ACTIVE;
                     $this->cycles_completed = $cyclesCompleted;
-                    $this->next_billing_gmt = $nextBillingGMTTimestamp;
+                    $this->last_payment_date = $lastPaymentDate;
                     return $this->save();
                 }
             } else {
@@ -329,7 +335,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                     $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
                 }
                 $this->save();
-                if (gmmktime() < $nextBillingGMTTimestamp) {
+                if ($currentUtc < $mustBeStillActive) {
                     return true;
                 }
                 return false;
