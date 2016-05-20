@@ -78,7 +78,7 @@ class PaypalSettings extends \yii\db\ActiveRecord
             ],
             [
                 [
-                    'marchant_email'
+                    'merchant_email'
                 ],
                 'email'
             ],

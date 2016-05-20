@@ -4,6 +4,7 @@ use yii\bootstrap\ActiveForm;
 use achertovsky\paypal\models\PaypalSettings;
 use yii\helpers\Html;
 
+$this->title = 'Paypal Settings';
 ?>
 
 <div class="row">
