@@ -321,14 +321,10 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             
             if (($profileStatus = $response->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus) == 'ActiveProfile') {
                 $cyclesCompleted = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
-                if ($currentUtc < $mustBeStillActive) {
-                    return true;
-                } else {
-                    $this->subscription_status = self::SUBSCRIPTION_STATUS_ACTIVE;
-                    $this->cycles_completed = $cyclesCompleted;
-                    $this->last_payment_date = $lastPaymentDate;
-                    return $this->save();
-                }
+                $this->subscription_status = self::SUBSCRIPTION_STATUS_ACTIVE;
+                $this->cycles_completed = $cyclesCompleted;
+                $this->last_payment_date = $lastPaymentDate;
+                return $this->save();
             } else {
                 if ($profileStatus == 'CancelledProfile') {
                     $this->subscription_status = self::SUBSCRIPTION_STATUS_CANCELLED;
