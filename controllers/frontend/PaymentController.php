@@ -113,7 +113,6 @@ class PaymentController extends \yii\web\Controller
             if ($subscription->startSubscription()) {
                 Yii::$app->getSession()->setFlash('success', 'Congratulations. You have successfully subscribed.');
             } else {
-                $subscription->delete();
                 Yii::$app->getSession()->setFlash('error', 'Sorry, but your subscription was not activated. Check paypal to be sure. If something wrong - contact us');
             }
         } catch (Exception $ex) {

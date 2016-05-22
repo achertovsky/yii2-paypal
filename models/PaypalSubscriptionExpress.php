@@ -272,6 +272,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         if (strtolower($createRPProfileResponse->Ack) == 'failure') {
             $this->errors = var_export($createRPProfileResponse->Errors, true);
             $this->status = self::STATUS_ERROR;
+            $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
             $this->save();
             Yii::error('Errors: '.var_export($createRPProfileResponse->Errors, true));
             return false;
@@ -340,7 +341,8 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                 return false;
             }
         }
-        
+        $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
+        $this->save();
         return false;
     }
 
