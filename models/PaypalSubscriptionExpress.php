@@ -49,9 +49,9 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     const STATUS_ERROR = 'ERROR';
     const STATUS_SUCCESS = 'SUCCESS';
 
-    const SUBSCRIPTION_STATUS_ACTIVE = 1;
-    const SUBSCRIPTION_STATUS_UNACTIVE = 0;
-    const SUBSCRIPTION_STATUS_PENDING = 2;
+    const SUBSCRIPTION_STATUS_UNACTIVE = 'ERROR';
+    const SUBSCRIPTION_STATUS_ACTIVE = 'ActiveProfile';
+    const SUBSCRIPTION_STATUS_PENDING = 'PendingProfile';
     const SUBSCRIPTION_STATUS_CANCELLED = 3;
 
     public $subscriptionUrl;
@@ -77,8 +77,8 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'created_at', 'updated_at', 'period', 'subscription_status', 'last_payment_date', 'cycles_completed'], 'integer', 'min' => 0],
-            [['errors', 'description', 'paypal_profile_id'], 'string'],
+            [['user_id', 'created_at', 'updated_at', 'period', 'last_payment_date', 'cycles_completed'], 'integer', 'min' => 0],
+            [['errors', 'description', 'subscription_status', 'paypal_profile_id'], 'string'],
             ['status', 'safe'],
             [['price', 'currency', 'period', 'token', 'description'], 'required'],
         ];
@@ -291,7 +291,10 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
      */
     public function isSubscriptionActive()
     {
-        if (empty($this->paypal_profile_id)) {
+        if ($this->subscription_status == self::SUBSCRIPTION_STATUS_UNACTIVE) {
+            return false;
+        }
+        if (empty($this->paypal_profile_id) && $this->status != self::STATUS_ERROR) {
             $this->startSubscription();
         }
         $settings = PaypalSettings::find()->one();
@@ -322,18 +325,12 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             
             if (($profileStatus = $response->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus) == 'ActiveProfile') {
                 $cyclesCompleted = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
-                $this->subscription_status = self::SUBSCRIPTION_STATUS_ACTIVE;
+                $this->subscription_status = $profileStatus;
                 $this->cycles_completed = $cyclesCompleted;
                 $this->last_payment_date = $lastPaymentDate;
                 return $this->save();
             } else {
-                if ($profileStatus == 'CancelledProfile') {
-                    $this->subscription_status = self::SUBSCRIPTION_STATUS_CANCELLED;
-                } elseif ($profileStatus == 'PendingProfile') {
-                    $this->subscription_status = self::SUBSCRIPTION_STATUS_PENDING;
-                } else {
-                    $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
-                }
+                $this->subscription_status = $profileStatus;
                 $this->save();
                 if ($currentUtc < $mustBeStillActive) {
                     return true;
@@ -369,12 +366,10 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         $response = $service->ManageRecurringPaymentsProfileStatus($req);
 
         if (strtolower($response->Ack) == 'success') {
-            $this->subscription_status = self::SUBSCRIPTION_STATUS_CANCELLED;
             return $this->save();
         } else {
             $this->addError('subscription_status', $response->Errors[0]->ShortMessage);
         }
-
         
         return false;
     }
