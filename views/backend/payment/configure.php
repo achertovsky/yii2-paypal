@@ -3,13 +3,16 @@
 use yii\bootstrap\ActiveForm;
 use achertovsky\paypal\models\PaypalSettings;
 use yii\helpers\Html;
+use achertovsky\paypal\PaypalAsset;
 
+PaypalAsset::register($this);
 $this->title = 'Paypal Settings';
 ?>
 
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
         <?php $form = ActiveForm::begin([
+            'id' => 'paypalSettingsSaveForm',
             'enableAjaxValidation' => true,
             'enableClientValidation' => false,
         ]);?>
@@ -25,6 +28,7 @@ $this->title = 'Paypal Settings';
         ])?>
 
         <?=Html::submitButton('Save', [
+            'id' => 'paypalSettingsSaveBtn',
             'class' => 'btn btn-success col-md-2 col-md-offset-5'
         ])?>
         

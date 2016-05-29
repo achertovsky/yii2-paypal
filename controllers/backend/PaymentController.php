@@ -7,6 +7,8 @@ use achertovsky\paypal\models\PaypalSettings;
 use Yii;
 use yii\bootstrap\ActiveForm;
 use yii\web\Response;
+use achertovsky\paypal\models\PaypalSubscriptionExpress;
+use achertovsky\paypal\models\PaypalExpressPayment;
 
 class PaymentController extends \yii\web\Controller
 {
@@ -36,6 +38,8 @@ class PaymentController extends \yii\web\Controller
             }
             
             if ($settings->save()) {
+                PaypalSubscriptionExpress::deleteAll();
+                PaypalExpressPayment::deleteAll();
                 Yii::$app->getSession()->setFlash('success', 'Paypal settings updated succesfully');
                 return $this->refresh();
             }
