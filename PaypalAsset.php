@@ -8,9 +8,10 @@ class PaypalAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/achertovsky/paypal-yii2/js';
 
-    public function init()
-    {
-        parent::init();
-        $this->js[] = 'paypal.js';
-    }
+    public $js = [
+        'paypal.js',
+    ];
+    public $depends = [
+        'yii\web\JqueryAsset',
+    ];
 }
