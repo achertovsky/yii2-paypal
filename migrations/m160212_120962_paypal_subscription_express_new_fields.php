@@ -12,7 +12,7 @@ class m160212_120962_paypal_subscription_express_new_fields extends Migration
             $this->addColumn('{{%paypal_subscription_express}}', 'paypal_profile_id', $this->string());
         }
         if (empty($this->db->getTableSchema('{{%paypal_subscription_express}}')->getColumn('subscription_status'))) {
-            $this->addColumn('{{%paypal_subscription_express}}', 'subscription_status', $this->integer()->defaultValue(PaypalSubscriptionExpress::SUBSCRIPTION_STATUS_ACTIVE));
+            $this->addColumn('{{%paypal_subscription_express}}', 'subscription_status', $this->integer());
         }
     }
 
