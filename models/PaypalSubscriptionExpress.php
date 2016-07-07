@@ -253,8 +253,6 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         $scheduleDetails->MaxFailedPayments = 1;
         $scheduleDetails->Description = $this->description;
         $scheduleDetails->PaymentPeriod = $paymentBillingPeriod;
-        $scheduleDetails->ActivationDetails = new ActivationDetailsType();
-        $scheduleDetails->ActivationDetails->InitialAmount = new BasicAmountType($this->currency, $this->price);        
 
         $createRPProfileRequestDetails = new CreateRecurringPaymentsProfileRequestDetailsType();
         $createRPProfileRequestDetails->Token = $this->token;
