@@ -325,7 +325,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                 $cyclesCompleted = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
                 $this->subscription_status = $profileStatus;
                 $this->cycles_completed = $cyclesCompleted;
-                $this->last_payment_date = $lastPaymentDate;
+                $this->last_payment_date = (int)$lastPaymentDate;
                 return $this->save();
             } else {
                 $this->subscription_status = $profileStatus;
