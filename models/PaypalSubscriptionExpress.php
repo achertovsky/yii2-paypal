@@ -321,10 +321,10 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             $utcStr = gmdate("M d Y H:i:s", time());
             $currentUtc = strtotime($utcStr);
             
+            $cyclesCompleted = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
+            $this->cycles_completed = $cyclesCompleted;
             if (($profileStatus = $response->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus) == 'ActiveProfile') {
-                $cyclesCompleted = $response->GetRecurringPaymentsProfileDetailsResponseDetails->RecurringPaymentsSummary->NumberCyclesCompleted;
                 $this->subscription_status = $profileStatus;
-                $this->cycles_completed = $cyclesCompleted;
                 $this->last_payment_date = (int)$lastPaymentDate;
                 return $this->save();
             } else {
