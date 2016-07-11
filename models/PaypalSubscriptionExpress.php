@@ -336,8 +336,6 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
                 return false;
             }
         }
-        $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
-        $this->save();
         return false;
     }
 
