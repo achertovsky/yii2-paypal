@@ -351,6 +351,9 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             'acct1.Password' => $settings->api_password,
             'acct1.Signature' => $settings->api_signature,
         ];
+        if (empty($this->paypal_profile_id)) {
+            return $this->save();
+        }
 
         $details = new ManageRecurringPaymentsProfileStatusRequestDetailsType($this->paypal_profile_id, 'Cancel');
         $reqType = new ManageRecurringPaymentsProfileStatusRequestType();
