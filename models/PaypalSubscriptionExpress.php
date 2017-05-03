@@ -53,6 +53,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
     const SUBSCRIPTION_STATUS_ACTIVE = 'ActiveProfile';
     const SUBSCRIPTION_STATUS_PENDING = 'PendingProfile';
     const SUBSCRIPTION_STATUS_CANCELLED = 'CancelledProfile';
+    const SUBSCRIPTION_STATUS_SUSPENDED = 'SuspendedProfile';
 
     public $subscriptionUrl;
     public $cancelUrl;
