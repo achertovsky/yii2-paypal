@@ -105,7 +105,6 @@ class PaypalSettings extends \yii\db\ActiveRecord
             'app_id' => 'App ID',
             'merchant_email' => 'Merchant Email',
             'mode' => 'Mode',
-            'pay_price' => 'Premium account price (USD)'
         ];
     }
     
@@ -130,6 +129,15 @@ class PaypalSettings extends \yii\db\ActiveRecord
      */
     public static function getSettings()
     {
+        if (!Yii::$app->hasModule('payment')) {
+            return $settings = PaypalSettings::find()->one();
+        }
+        if (!Yii::$app->getModule('payment')->enableSettingsCache) {
+            return $settings = PaypalSettings::find()->one();
+        }
+        if (!Yii::$app->has('cache')) {
+            return $settings = PaypalSettings::find()->one();
+        }
         $cacheName = PaypalSettings::className().'settings';
         if (Yii::$app->cache->exists($cacheName)) {
             return Yii::$app->cache->get($cacheName);
