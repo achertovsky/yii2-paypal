@@ -29,7 +29,7 @@ class PaymentController extends \yii\web\Controller
     
     public function actionConfigure()
     {
-        $settings = PaypalSettings::find()->one();
+        $settings = PaypalSettings::getSettings();
         
         if ($settings->load(Yii::$app->request->post())) {
             if (Yii::$app->request->isAjax) {

@@ -139,7 +139,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
          * LOGIC
          */
         
-        $settings = PaypalSettings::find()->one();
+        $settings = PaypalSettings::getSettings();
         
         if (empty($settings)) {
             Yii::error('Settings of PayPal haven\'t initialized');
@@ -207,7 +207,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
             Yii::error('Ipn url haven\'t initialized');
             throw new Exception('Ipn url haven\'t initialized');
         }
-        $settings = PaypalSettings::find()->one();
+        $settings = PaypalSettings::getSettings();
         $config = [
             'mode' => $settings->mode ? 'live' : 'sandbox',
             'acct1.UserName' => $settings->api_username,
@@ -266,7 +266,7 @@ class PaypalExpressPayment extends \yii\db\ActiveRecord
         if (empty($token)) {
             return null;
         }
-        $settings = PaypalSettings::find()->one();
+        $settings = PaypalSettings::getSettings();
         if ($settings->mode == PaypalSettings::MODE_SANDBOX) {
             return self::EXPRESS_CHECKOUT_SANDBOX.$token;
         }

@@ -114,7 +114,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             return false;
         }
         $this->setScenario('default');
-        $settings = PaypalSettings::find()->one();
+        $settings = PaypalSettings::getSettings();
         $config = [
             'mode' => $settings->mode ? 'live' : 'sandbox',
             'acct1.UserName' => $settings->api_username,
@@ -173,7 +173,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         if (empty($token)) {
             return null;
         }
-        $settings = PaypalSettings::find()->one();
+        $settings = PaypalSettings::getSettings();
         if ($settings->mode == PaypalSettings::MODE_SANDBOX) {
             return self::EXPRESS_CHECKOUT_SANDBOX.$token;
         }
@@ -233,7 +233,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             return true;
         }
 
-        $settings = PaypalSettings::find()->one();
+        $settings = PaypalSettings::getSettings();
         $config = [
             'mode' => $settings->mode ? 'live' : 'sandbox',
             'acct1.UserName' => $settings->api_username,
@@ -296,7 +296,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
         if (empty($this->paypal_profile_id) && $this->status != self::STATUS_ERROR) {
             $this->startSubscription();
         }
-        $settings = PaypalSettings::find()->one();
+        $settings = PaypalSettings::getSettings();
         $config = [
             'mode' => $settings->mode ? 'live' : 'sandbox',
             'acct1.UserName' => $settings->api_username,
@@ -345,7 +345,7 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
      */
     public function cancelSubscription()
     {
-        $settings = PaypalSettings::find()->one();
+        $settings = PaypalSettings::getSettings();
         $config = [
             'mode' => $settings->mode ? 'live' : 'sandbox',
             'acct1.UserName' => $settings->api_username,

@@ -117,6 +117,7 @@ class PaypalSettings extends \yii\db\ActiveRecord
      */
     public function beforeSave($insert)
     {
+        Yii::$app->cache->delete(PaypalSettings::className().'settings');
         parent::beforeSave($insert);
         if ($insert) {
             return false;
@@ -125,12 +126,16 @@ class PaypalSettings extends \yii\db\ActiveRecord
     }
     
     /**
-     * this model must have only one row in table
-     * @return boolean
+     * @return PaypalSettings
      */
-    public function beforeDelete()
+    public static function getSettings()
     {
-        parent::beforeDelete();
-        return false;
+        $cacheName = PaypalSettings::className().'settings';
+        if (Yii::$app->cache->exists($cacheName)) {
+            return Yii::$app->cache->get($cacheName);
+        }
+        $settings = PaypalSettings::find()->one();
+        Yii::$app->cache->set($cacheName, $settings);
+        return $settings;
     }
 }
