@@ -50,6 +50,8 @@ class Module extends \yii\base\Module implements BootstrapInterface
     public $subscriptionUsernameGetter = 'username';
     //defines if user receive notifications via email when subscription status changed
     public $subscriptionEmailNotification = false;
+    //enables caching or vise versa
+    public $enableSettingsCache = true;
     
     public function __construct($id, $parent = null, $config = array())
     {
