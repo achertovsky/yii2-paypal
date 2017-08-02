@@ -273,7 +273,6 @@ class PaypalSubscriptionExpress extends \yii\db\ActiveRecord
             $this->status = self::STATUS_ERROR;
             $this->subscription_status = self::SUBSCRIPTION_STATUS_UNACTIVE;
             $this->save();
-            Yii::error('Errors: '.var_export($createRPProfileResponse->Errors, true));
             return false;
         }
         if (strtolower($createRPProfileResponse->Ack) == 'success') {
