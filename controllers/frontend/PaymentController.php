@@ -73,7 +73,7 @@ class PaymentController extends \yii\web\Controller
         }
         try {
             $paypal->createExpressPayment($paypal->payment_price, 1);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
         $url = $paypal->paymentUrl;
@@ -115,7 +115,7 @@ class PaymentController extends \yii\web\Controller
             } else {
                 Yii::$app->getSession()->setFlash('error', 'Sorry, but your subscription was not activated. Check paypal to be sure. If something wrong - contact us');
             }
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             $subscription->delete();
             throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
@@ -150,7 +150,7 @@ class PaymentController extends \yii\web\Controller
                 Yii::info('User #'.Yii::$app->user->getId().' redirected to paypal with token is "'.$subscription->getToken().'"', 'payment');
                 return $this->redirect($url);
             }
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             throw new \yii\web\NotFoundHttpException('Page Not Found');
         }
         throw new BadRequestHttpException('Something went wrong');
