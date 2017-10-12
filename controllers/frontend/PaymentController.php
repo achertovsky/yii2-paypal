@@ -66,7 +66,6 @@ class PaymentController extends \yii\web\Controller
             $paypal->isNewRecord = false;
         } else {
             $paypal = Yii::$app->getModule('payment')->paypalExpressPayment;
-            $paypal->payment_price = $price;
         }
         if (empty($paypal)) {
             throw new \yii\web\NotFoundHttpException('Page Not Found');
